@@ -1,0 +1,72 @@
+<x-layouts.app title="Dashboard" subtitle="Ringkasan operasional bulan berjalan">
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
+        @php
+            $cards = [
+                ['Sampah organik', number_format($summary['organic'], 1, ',', '.').' kg', 'arrow-path-rounded-square', 'bg-emerald-50 text-emerald-700'],
+                ['Non-organik', number_format($summary['non_organic'], 1, ',', '.').' kg', 'trash', 'bg-slate-100 text-slate-700'],
+                ['Maggot basah', number_format($summary['wet_maggot'], 1, ',', '.').' kg', 'beaker', 'bg-lime-50 text-lime-700'],
+                ['Produksi kasgot', number_format($summary['kasgot'], 1, ',', '.').' kg', 'cube', 'bg-amber-50 text-amber-700'],
+                ['Hadir hari ini', number_format($summary['attendance']), 'user-group', 'bg-sky-50 text-sky-700'],
+                ['Aset kritis', number_format($summary['critical_assets']), 'exclamation-triangle', 'bg-red-50 text-red-700'],
+            ];
+        @endphp
+        @foreach($cards as [$label, $value, $icon, $colors])
+            <article class="card p-4">
+                <div class="grid size-10 place-items-center rounded-xl {{ $colors }}"><x-dynamic-component :component="'heroicon-o-'.$icon" class="size-5" /></div>
+                <p class="mt-4 text-xs font-semibold uppercase tracking-wide text-slate-500">{{ $label }}</p>
+                <p class="mt-1 text-2xl font-bold text-slate-900">{{ $value }}</p>
+            </article>
+        @endforeach
+    </div>
+
+    <div class="mt-6 grid gap-6 xl:grid-cols-[1.5fr_1fr]">
+        <section class="card p-5 sm:p-6">
+            <div class="flex items-center justify-between">
+                <div><h2 class="font-bold text-slate-900">Tren 7 hari terakhir</h2><p class="mt-1 text-sm text-slate-500">Sampah organik dan produksi maggot basah</p></div>
+                <x-heroicon-o-chart-bar class="size-6 text-brand-700" />
+            </div>
+            @php($maxValue = max(1, $chart->max(fn($item) => max($item['organic'], $item['production']))))
+            <div class="mt-8 flex h-56 items-end justify-between gap-2" role="img" aria-label="Grafik operasional tujuh hari">
+                @foreach($chart as $item)
+                    <div class="flex h-full flex-1 flex-col items-center justify-end gap-2">
+                        <div class="flex h-full w-full items-end justify-center gap-1">
+                            <div title="Organik {{ $item['organic'] }} kg" class="w-2.5 rounded-t bg-brand-700 sm:w-4" style="height: {{ max(3, ($item['organic'] / $maxValue) * 100) }}%"></div>
+                            <div title="Produksi {{ $item['production'] }} kg" class="w-2.5 rounded-t bg-lime-400 sm:w-4" style="height: {{ max(3, ($item['production'] / $maxValue) * 100) }}%"></div>
+                        </div>
+                        <span class="text-[11px] font-medium text-slate-500">{{ $item['label'] }}</span>
+                    </div>
+                @endforeach
+            </div>
+            <div class="mt-4 flex gap-5 text-xs text-slate-500"><span class="flex items-center gap-2"><i class="size-2.5 rounded-full bg-brand-700"></i> Sampah organik</span><span class="flex items-center gap-2"><i class="size-2.5 rounded-full bg-lime-400"></i> Maggot basah</span></div>
+        </section>
+
+        <section class="card p-5 sm:p-6">
+            <div class="flex items-center justify-between"><div><h2 class="font-bold text-slate-900">Perawatan mendatang</h2><p class="mt-1 text-sm text-slate-500">Jatuh tempo dalam tujuh hari</p></div><x-heroicon-o-wrench class="size-5 text-slate-400" /></div>
+            <div class="mt-5 divide-y divide-stone-100">
+                @forelse($dueMaintenances as $item)
+                    <a href="{{ route('assets.show', $item->asset) }}" class="flex items-center gap-3 py-3 first:pt-0 hover:text-brand-700">
+                        <div class="grid size-10 shrink-0 place-items-center rounded-xl {{ $item->scheduled_at->isPast() ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700' }}"><x-heroicon-o-calendar-days class="size-5" /></div>
+                        <div class="min-w-0 flex-1"><p class="truncate text-sm font-semibold text-slate-900">{{ $item->asset->name }}</p><p class="text-xs text-slate-500">{{ $item->scheduled_at->translatedFormat('d M Y') }} · {{ $item->maintenance_type }}</p></div>
+                        <x-heroicon-o-chevron-right class="size-4 text-slate-400" />
+                    </a>
+                @empty
+                    <p class="py-8 text-center text-sm text-slate-500">Tidak ada perawatan mendesak.</p>
+                @endforelse
+            </div>
+        </section>
+    </div>
+
+    @if($pendingReports->isNotEmpty())
+        <section class="mt-6 card p-5 sm:p-6">
+            <div class="flex flex-wrap items-center justify-between gap-3"><div><h2 class="font-bold text-slate-900">Menunggu validasi</h2><p class="mt-1 text-sm text-slate-500">Laporan terbaru yang perlu ditinjau</p></div><a href="{{ route('reports.index', ['status' => 'submitted']) }}" class="btn-secondary">Lihat semua <x-heroicon-o-arrow-right class="size-4" /></a></div>
+            <div class="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+                @foreach($pendingReports as $report)
+                    <a href="{{ route('reports.show', $report) }}" class="rounded-2xl border border-stone-200 p-4 transition hover:border-brand-300 hover:bg-brand-50/50">
+                        <div class="flex items-center justify-between"><p class="font-semibold text-slate-900">{{ $report->report_date->translatedFormat('d M Y') }}</p><x-status-badge :status="$report->status" /></div>
+                        <p class="mt-2 text-sm text-slate-500">{{ $report->creator->name }}</p>
+                    </a>
+                @endforeach
+            </div>
+        </section>
+    @endif
+</x-layouts.app>

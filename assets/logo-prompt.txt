@@ -1,0 +1,12 @@
+Use case: logo-brand
+Asset type: temporary application logo for SIM Rumah Maggot
+Primary request: Create a simple, memorable logo mark for an Indonesian maggot-farming management information system.
+Scene/backdrop: perfectly flat solid #ff00ff chroma-key background for background removal; no floor plane.
+Subject: a clean circular ecosystem symbol combining a simplified BSF larva silhouette, one organic leaf, and a subtle data/chart motif. The elements must read as one coherent mark, not three separate icons.
+Style/medium: modern flat vector-style logo, strong silhouette, minimal geometry, scalable and professional.
+Composition/framing: centered square composition, balanced negative space, generous padding, icon only.
+Color palette: deep forest green, fresh leaf green, warm amber accent, and dark charcoal. Do not use magenta in the logo itself.
+Text: no text, no letters, no slogan.
+Constraints: suitable for web dashboard favicon and app header; crisp edges; high contrast; culturally neutral; temporary brand asset.
+Avoid: photorealism, detailed insect anatomy, grotesque imagery, gradients, shadows, reflections, mockup presentation, extra objects, watermark, background texture, any text.
+Background requirement: The background must be one perfectly uniform #ff00ff color with no shadows, gradients, texture, reflections, lighting variation, or contact shadow.

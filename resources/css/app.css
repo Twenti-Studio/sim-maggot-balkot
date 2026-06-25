@@ -1,0 +1,38 @@
+@import 'tailwindcss';
+
+@source '../views/**/*.blade.php';
+@source '../js/**/*.js';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --color-brand-50: #f0fdf4;
+    --color-brand-100: #dcfce7;
+    --color-brand-500: #22c55e;
+    --color-brand-600: #16a34a;
+    --color-brand-700: #15803d;
+    --color-brand-800: #166534;
+    --color-ink: #17211b;
+}
+
+@layer base {
+    body { @apply bg-stone-50 text-slate-800 antialiased; }
+    input, select, textarea { @apply outline-none; }
+}
+
+@layer components {
+    .card { @apply rounded-2xl border border-stone-200 bg-white shadow-sm; }
+    .btn { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50; }
+    .btn-primary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-800 focus:ring-2 focus:ring-brand-600 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50; }
+    .btn-secondary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-stone-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-stone-50 focus:ring-2 focus:ring-stone-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50; }
+    .btn-danger { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50; }
+    .field { @apply block w-full rounded-xl border border-stone-300 bg-white px-3.5 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand-600 focus:ring-2 focus:ring-brand-100; }
+    .label { @apply mb-1.5 block text-sm font-medium text-slate-700; }
+    .nav-link { @apply flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-brand-50 hover:text-brand-800; }
+    .nav-link-active { @apply bg-brand-100 text-brand-800; }
+    .table-wrap { @apply overflow-x-auto rounded-2xl border border-stone-200 bg-white; }
+    .data-table { @apply min-w-full divide-y divide-stone-200 text-sm; }
+    .data-table th { @apply whitespace-nowrap bg-stone-50 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-500; }
+    .data-table td { @apply px-4 py-3 align-top text-slate-700; }
+    .data-table tbody { @apply divide-y divide-stone-100; }
+}

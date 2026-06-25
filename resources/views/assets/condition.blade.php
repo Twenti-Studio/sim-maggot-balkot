@@ -1,0 +1,2 @@
+@php($map=['good'=>['Baik','bg-green-100 text-green-700'],'needs_maintenance'=>['Perlu perawatan','bg-amber-100 text-amber-800'],'minor_damage'=>['Rusak ringan','bg-orange-100 text-orange-700'],'major_damage'=>['Rusak berat','bg-red-100 text-red-700']])
+<span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ ($map[$condition]??['Status','bg-slate-100'])[1] }}">{{ ($map[$condition]??[$condition])[0] }}</span>
