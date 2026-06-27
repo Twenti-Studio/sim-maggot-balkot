@@ -9,14 +9,13 @@ Mobile-first web application dan Progressive Web App untuk operasional Rumah Mag
 - Manajemen pengguna dan lokasi oleh Super Admin.
 - Laporan harian terpadu untuk sampah, siklus maggot, dan hasil produksi.
 - Workflow Draft → Diajukan → Divalidasi/Ditolak serta permintaan revisi.
-- Manajemen petugas dan absensi check-in/check-out.
+- Manajemen petugas, absensi check-in/check-out, gaji, dan bonus.
+- Manajemen keuangan untuk kas masuk, transaksi kasir, kas keluar, dan ringkasan laba rugi.
 - Inventaris aset, pelaporan kondisi, jadwal, dan riwayat perawatan.
 - Audit log untuk tindakan penting.
 - Pusat notifikasi, subscription Web Push per perangkat, dan deep link.
 - PWA installable dengan manifest, service worker, mode standalone, dan halaman offline.
 - Export PDF dan Excel untuk produksi/sampah, absensi, inventaris aset, dan perawatan aset.
-
-Modul keuangan dan penggajian belum diimplementasikan sesuai prioritas saat ini.
 
 ## Menjalankan dengan Docker
 
@@ -31,6 +30,19 @@ docker compose exec app php artisan migrate --seed
 ```
 
 Buka `http://127.0.0.1:8091`. Ganti `DB_PASSWORD`, `APP_URL`, konfigurasi email, dan VAPID key sebelum deployment produksi.
+
+## Deployment Produksi HTTPS
+
+Contoh environment production tersedia di `.env.production.example`.
+
+```bash
+cp .env.production.example .env
+nano .env
+scripts/deploy-production.sh
+scripts/deploy-production.sh --ssl
+```
+
+Script akan membuat `APP_KEY` jika masih kosong. Ganti `DB_PASSWORD` dan `INITIAL_ADMIN_PASSWORD` sebelum menjalankan deployment. Pastikan DNS `simaggotbalkot.com` dan `www.simaggotbalkot.com` mengarah ke IP server sebelum menjalankan mode `--ssl`. Container Nginx production memakai sertifikat sementara self-signed sampai sertifikat Let’s Encrypt berhasil diterbitkan.
 
 ## Development tanpa Docker
 

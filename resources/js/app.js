@@ -26,7 +26,10 @@ document.querySelector('[data-install-pwa]')?.addEventListener('click', async ()
 });
 
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => navigator.serviceWorker.register('/service-worker.js?v=2'));
+    window.addEventListener('load', async () => {
+        const registration = await navigator.serviceWorker.register('/service-worker.js?v=4');
+        registration.update();
+    });
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -37,10 +40,10 @@ function urlBase64ToUint8Array(base64String) {
 
 async function enablePush(button) {
     if (!('serviceWorker' in navigator) || !('PushManager' in window) || !vapidPublicKey) {
-        throw new Error('Web Push tidak tersedia pada perangkat ini.');
+        throw new Error('Notifikasi belum tersedia pada perangkat ini.');
     }
     const installed = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    if (!installed) throw new Error('Pasang aplikasi ke perangkat terlebih dahulu sebelum mengaktifkan push notification.');
+    if (!installed) throw new Error('Pasang aplikasi ke perangkat terlebih dahulu sebelum mengaktifkan notifikasi.');
     button.disabled = true;
     const registration = await navigator.serviceWorker.ready;
     const permission = await Notification.requestPermission();
@@ -50,7 +53,7 @@ async function enablePush(button) {
     payload.contentEncoding = (PushManager.supportedContentEncodings || ['aes128gcm'])[0];
     payload.device_name = navigator.userAgent;
     const response = await fetch('/push-subscriptions', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrf, Accept: 'application/json' }, body: JSON.stringify(payload) });
-    if (!response.ok) throw new Error('Subscription gagal disimpan.');
+    if (!response.ok) throw new Error('Perangkat gagal disimpan untuk notifikasi.');
     button.textContent = 'Notifikasi aktif';
     button.classList.add('opacity-70');
 }
@@ -58,4 +61,15 @@ async function enablePush(button) {
 document.querySelector('[data-enable-push]')?.addEventListener('click', async (event) => {
     try { await enablePush(event.currentTarget); }
     catch (error) { alert(error.message); event.currentTarget.disabled = false; }
+});
+
+document.querySelectorAll('[data-password-toggle]').forEach((button) => {
+    button.addEventListener('click', () => {
+        const input = document.getElementById(button.dataset.passwordToggle);
+        if (!input) return;
+        const hidden = input.type === 'password';
+        input.type = hidden ? 'text' : 'password';
+        button.setAttribute('aria-label', hidden ? 'Sembunyikan kata sandi' : 'Lihat kata sandi');
+        button.setAttribute('aria-pressed', hidden ? 'true' : 'false');
+    });
 });

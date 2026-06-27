@@ -46,6 +46,16 @@ class User extends Authenticatable
         return $this->hasMany(AppNotification::class);
     }
 
+    public function wasteDeposits()
+    {
+        return $this->hasMany(WasteDeposit::class);
+    }
+
+    public function wasteWithdrawals()
+    {
+        return $this->hasMany(WasteWithdrawal::class);
+    }
+
     public function pushSubscriptions()
     {
         return $this->hasMany(PushSubscription::class);

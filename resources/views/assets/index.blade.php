@@ -1,4 +1,4 @@
-<x-layouts.app title="Aset & Perawatan" subtitle="Inventaris dan kondisi aset Rumah Maggot">
+<x-layouts.app title="Aset & Perawatan" subtitle="Inventaris dan kondisi aset Maggot Balkot">
     <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
         <form method="GET" class="flex flex-1 flex-wrap gap-2"><div class="relative max-w-sm flex-1"><x-heroicon-o-magnifying-glass class="absolute left-3.5 top-3 size-5 text-slate-400" /><input name="q" value="{{ request('q') }}" class="field pl-11" placeholder="Cari aset atau kode"></div><select name="condition" class="field max-w-48"><option value="">Semua kondisi</option>@foreach(['good'=>'Baik','needs_maintenance'=>'Perlu perawatan','minor_damage'=>'Rusak ringan','major_damage'=>'Rusak berat'] as $v=>$l)<option value="{{ $v }}" @selected(request('condition')===$v)>{{ $l }}</option>@endforeach</select><button class="btn-secondary">Cari</button></form>
         @if(auth()->user()->hasPermission('asset.create'))<a href="{{ route('assets.create') }}" class="btn-primary"><x-heroicon-o-plus class="size-4" /> Tambah aset</a>@endif

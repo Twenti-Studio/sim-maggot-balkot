@@ -32,6 +32,6 @@
         </div>
         <div class="mt-5">{{ $reports->links() }}</div>
     @else
-        <x-empty-state title="Belum ada laporan" description="Mulai pencatatan operasional harian Rumah Maggot.">@if(auth()->user()->hasPermission('production.create'))<a href="{{ route('reports.create') }}" class="btn-primary mt-5"><x-heroicon-o-plus class="size-4" /> Tambah laporan</a>@endif</x-empty-state>
+        <x-empty-state title="Belum ada laporan" description="Mulai pencatatan operasional harian Maggot Balkot.">@if(auth()->user()->hasPermission('production.create'))<a href="{{ route('reports.create') }}" class="btn-primary mt-5"><x-heroicon-o-plus class="size-4" /> Tambah laporan</a>@endif</x-empty-state>
     @endif
 </x-layouts.app>

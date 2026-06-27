@@ -1,4 +1,4 @@
-<x-layouts.app title="Manajemen Petugas" subtitle="Data petugas operasional Rumah Maggot">
+<x-layouts.app title="Manajemen Petugas" subtitle="Data petugas operasional Maggot Balkot">
     <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
         <form method="GET" class="flex flex-1 gap-2"><div class="relative max-w-sm flex-1"><x-heroicon-o-magnifying-glass class="absolute left-3.5 top-3 size-5 text-slate-400" /><input name="q" value="{{ request('q') }}" class="field pl-11" placeholder="Cari nama atau kode"></div><select name="status" class="field max-w-40"><option value="">Semua status</option><option value="active" @selected(request('status')==='active')>Aktif</option><option value="inactive" @selected(request('status')==='inactive')>Tidak aktif</option></select><button class="btn-secondary">Cari</button></form>
         <a href="{{ route('staff.create') }}" class="btn-primary"><x-heroicon-o-user-plus class="size-4" /> Tambah petugas</a>

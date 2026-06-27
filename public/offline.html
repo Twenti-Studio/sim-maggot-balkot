@@ -1,2 +1,101 @@
 <!doctype html>
-<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#166534"><title>Offline · SIM Rumah Maggot</title><style>body{margin:0;font-family:system-ui,sans-serif;background:#f5f5f4;color:#17211b;display:grid;min-height:100vh;place-items:center}.box{max-width:28rem;padding:2rem;text-align:center}.logo{width:88px;height:88px;object-fit:contain}.btn{display:inline-block;margin-top:1rem;padding:.75rem 1.2rem;border-radius:.75rem;background:#166534;color:#fff;text-decoration:none;font-weight:700}</style></head><body><main class="box"><img class="logo" src="/images/logo.png" alt="Logo"><h1>Perangkat sedang offline</h1><p>Sambungkan kembali internet untuk mengirim laporan atau memperbarui data. Data belum dianggap tersimpan sebelum server memberikan konfirmasi.</p><a class="btn" href="/dashboard">Coba lagi</a></main></body></html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#166534">
+    <title>Offline · SIM Maggot Balkot</title>
+    <style>
+        body{margin:0;font-family:system-ui,sans-serif;background:#f5f5f4;color:#17211b;display:grid;min-height:100vh;place-items:center}
+        .box{max-width:30rem;padding:2rem;text-align:center}
+        .logo{width:88px;height:88px;object-fit:contain}
+        .status{margin:.75rem 0 0;color:#64748b;font-size:.95rem}
+        .btn{display:inline-flex;align-items:center;justify-content:center;margin-top:1rem;padding:.75rem 1.2rem;border:0;border-radius:.75rem;background:#166534;color:#fff;text-decoration:none;font:700 1rem system-ui,sans-serif;cursor:pointer}
+        .btn:disabled{cursor:wait;opacity:.7}
+    </style>
+</head>
+<body>
+    <main class="box">
+        <img class="logo" src="/images/logo.png" alt="Logo">
+        <h1>Perangkat sedang offline</h1>
+        <p>Sambungkan kembali internet untuk mengirim laporan atau memperbarui data. Data belum dianggap tersimpan sebelum server memberikan konfirmasi.</p>
+        <p class="status" data-status>Menunggu koneksi kembali...</p>
+        <button class="btn" type="button" data-retry>Coba lagi</button>
+    </main>
+    <script>
+        const statusText = document.querySelector('[data-status]');
+        const retryButton = document.querySelector('[data-retry]');
+        const target = location.pathname === '/offline.html' ? '/dashboard' : location.href;
+        let checking = false;
+        let retryTimer = null;
+        let retryDelay = 10000;
+
+        async function serverReachable() {
+            if (!navigator.onLine) {
+                return false;
+            }
+
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 5000);
+
+            try {
+                const response = await fetch('/up?offline_check=' + Date.now(), {
+                    cache: 'no-store',
+                    credentials: 'same-origin',
+                    headers: { Accept: 'text/plain' },
+                    signal: controller.signal,
+                });
+
+                return response.ok;
+            } catch (error) {
+                return false;
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
+        async function retry() {
+            if (checking) return;
+            checking = true;
+            retryButton.disabled = true;
+            statusText.textContent = navigator.onLine ? 'Memeriksa koneksi...' : 'Perangkat masih offline.';
+
+            if (await serverReachable()) {
+                statusText.textContent = 'Koneksi kembali. Memuat ulang...';
+                location.replace(target);
+                return;
+            }
+
+            statusText.textContent = 'Belum terhubung. Sistem akan mencoba lagi otomatis.';
+            retryButton.disabled = false;
+            checking = false;
+            scheduleRetry();
+        }
+
+        function scheduleRetry() {
+            clearTimeout(retryTimer);
+            retryTimer = setTimeout(retry, retryDelay);
+            retryDelay = Math.min(retryDelay * 1.5, 60000);
+        }
+
+        retryButton.addEventListener('click', () => {
+            retryDelay = 10000;
+            retry();
+        });
+        window.addEventListener('online', () => {
+            retryDelay = 10000;
+            retry();
+        });
+        window.addEventListener('offline', () => {
+            statusText.textContent = 'Perangkat masih offline.';
+            scheduleRetry();
+        });
+
+        if (navigator.onLine) {
+            retry();
+        } else {
+            scheduleRetry();
+        }
+    </script>
+</body>
+</html>

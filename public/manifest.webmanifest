@@ -1,7 +1,7 @@
 {
-  "name": "SIM Rumah Maggot",
-  "short_name": "Rumah Maggot",
-  "description": "Sistem Informasi Manajemen Rumah Maggot",
+  "name": "SIM Maggot Balkot",
+  "short_name": "Maggot Balkot",
+  "description": "Sistem Informasi Manajemen Maggot Balkot",
   "start_url": "/dashboard",
   "scope": "/",
   "display": "standalone",

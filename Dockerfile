@@ -1,7 +1,9 @@
 FROM composer:2 AS vendor
 WORKDIR /app
 COPY . .
-RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --optimize-autoloader
+RUN apk add --no-cache git \
+    && composer config --global github-protocols https \
+    && composer install --no-dev --prefer-source --no-interaction --no-progress --optimize-autoloader
 
 FROM node:22-alpine AS frontend
 WORKDIR /app

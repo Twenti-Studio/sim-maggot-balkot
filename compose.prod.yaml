@@ -1,0 +1,29 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile.prod
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - app_public_uploads:/var/www/html/public/storage:ro
+      - certbot_www:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-check-certificate -qO- https://127.0.0.1/up >/dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  certbot:
+    image: certbot/certbot:v3.0.1
+    profiles: ["certbot"]
+    volumes:
+      - certbot_www:/var/www/certbot
+      - letsencrypt:/etc/letsencrypt
+    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@simaggotbalkot.com --agree-tos --no-eff-email -d simaggotbalkot.com -d www.simaggotbalkot.com
+
+volumes:
+  certbot_www:
+  letsencrypt:

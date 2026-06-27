@@ -72,7 +72,7 @@ class ReportExportController extends Controller
     {
         return match ($type) {
             'production' => [
-                'title' => 'Laporan Produksi dan Sampah Rumah Maggot',
+                'title' => 'Laporan Produksi dan Sampah SIM Maggot Balkot',
                 'headers' => ['Tanggal', 'Lokasi', 'Petugas', 'Status', 'Organik (kg)', 'Non-organik (kg)', 'Telur', 'Bayi (kg)', 'Dewasa (kg)', 'Pre-pupa (kg)', 'Lalat BSF', 'Kasgot (kg)', 'Pupuk lain (kg)', 'Maggot basah (kg)', 'Maggot kering (kg)'],
                 'rows' => DailyReport::with(['location', 'creator'])->orderBy('report_date')->get()->map(fn ($row) => [
                     $row->report_date->format('d/m/Y'), $row->location->name, $row->creator->name, $row->status,
@@ -83,7 +83,7 @@ class ReportExportController extends Controller
             ],
             'attendance' => [
                 'title' => 'Laporan Absensi Petugas',
-                'headers' => ['Tanggal', 'Kode', 'Nama Petugas', 'Lokasi', 'Check-in', 'Check-out', 'Status', 'Catatan'],
+                'headers' => ['Tanggal', 'Kode', 'Nama Petugas', 'Lokasi', 'Jam masuk', 'Jam pulang', 'Status', 'Catatan'],
                 'rows' => Attendance::with('staff.location')->orderBy('attendance_date')->get()->map(fn ($row) => [
                     $row->attendance_date->format('d/m/Y'), $row->staff->employee_code, $row->staff->name, $row->staff->location->name,
                     $row->check_in_at?->format('H:i') ?: '-', $row->check_out_at?->format('H:i') ?: '-', $row->status, $row->notes ?: '-',

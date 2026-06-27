@@ -32,4 +32,9 @@ class Staff extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    public function payrollRecords()
+    {
+        return $this->hasMany(PayrollRecord::class);
+    }
 }
