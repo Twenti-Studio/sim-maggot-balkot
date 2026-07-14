@@ -27,7 +27,7 @@ document.querySelector('[data-install-pwa]')?.addEventListener('click', async ()
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
-        const registration = await navigator.serviceWorker.register('/service-worker.js?v=4');
+        const registration = await navigator.serviceWorker.register('/service-worker.js?v=5');
         registration.update();
     });
 }

@@ -1,4 +1,5 @@
-const CACHE_NAME = 'sim-maggot-balkot-v4';
+const CACHE_NAME = 'sim-maggot-balkot-v5';
+const PAGES_CACHE = 'sim-maggot-balkot-pages-v1';
 const APP_SHELL = ['/offline.html', '/favicon.ico', '/images/logo.png', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', event => {
@@ -9,7 +10,10 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-    event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))));
+    const keep = [CACHE_NAME, PAGES_CACHE];
+    event.waitUntil(caches.keys().then(keys => Promise.all(
+        keys.filter(key => !keep.includes(key)).map(key => caches.delete(key))
+    )));
     self.clients.claim();
 });
 
@@ -24,6 +28,12 @@ async function fetchWithTimeout(request, timeout = 6000) {
     }
 }
 
+// Halaman yang boleh disimpan untuk mode offline: hasil GET yang benar-benar
+// datang dari server ini (bukan pengalihan ke halaman login) dan berstatus 200.
+function isCacheablePage(response) {
+    return response && response.ok && response.type === 'basic' && !response.redirected;
+}
+
 self.addEventListener('fetch', event => {
     if (event.request.method !== 'GET') return;
     const url = new URL(event.request.url);
@@ -31,10 +41,29 @@ self.addEventListener('fetch', event => {
 
     if (event.request.mode === 'navigate') {
         event.respondWith((async () => {
+            // Saat pengguna kembali ke halaman login (termasuk setelah logout),
+            // bersihkan halaman tersimpan agar data akun sebelumnya tidak bocor
+            // ke pengguna berikutnya pada perangkat yang sama.
+            if (url.pathname === '/login') {
+                await caches.delete(PAGES_CACHE);
+            }
+
             try {
-                return await fetchWithTimeout(event.request);
+                const fresh = await fetchWithTimeout(event.request);
+
+                // Selama online, halaman yang berhasil dimuat disimpan sebagai
+                // cadangan agar tetap bisa dibuka ketika koneksi terputus.
+                if (isCacheablePage(fresh)) {
+                    const copy = fresh.clone();
+                    caches.open(PAGES_CACHE).then(cache => cache.put(event.request, copy));
+                }
+
+                return fresh;
             } catch (error) {
-                return caches.match('/offline.html', { ignoreSearch: true });
+                // Offline: tampilkan kembali halaman yang pernah dibuka. Halaman
+                // offline hanya muncul bila halaman ini memang belum pernah dibuka.
+                const cachedPage = await caches.match(event.request, { ignoreSearch: true });
+                return cachedPage || caches.match('/offline.html', { ignoreSearch: true });
             }
         })());
         return;
