@@ -1,5 +1,5 @@
-const CACHE_NAME = 'sim-maggot-balkot-v5';
-const PAGES_CACHE = 'sim-maggot-balkot-pages-v1';
+const CACHE_NAME = 'sim-maggot-balkot-v6';
+const PAGES_CACHE = 'sim-maggot-balkot-pages-v2';
 const APP_SHELL = ['/offline.html', '/favicon.ico', '/images/logo.png', '/icons/icon-192.png', '/icons/icon-512.png'];
 
 self.addEventListener('install', event => {

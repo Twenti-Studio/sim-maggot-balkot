@@ -1,13 +1,50 @@
 const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
 const vapidPublicKey = document.querySelector('meta[name="vapid-public-key"]')?.content;
 
-document.querySelector('[data-menu-toggle]')?.addEventListener('click', () => {
-    document.querySelector('[data-sidebar]')?.classList.toggle('-translate-x-full');
-    document.querySelector('[data-overlay]')?.classList.toggle('hidden');
+const sidebar = document.querySelector('[data-sidebar]');
+const overlay = document.querySelector('[data-overlay]');
+const menuToggle = document.querySelector('[data-menu-toggle]');
+
+function openSidebar() {
+    sidebar?.classList.remove('-translate-x-full');
+    overlay?.classList.remove('hidden');
+    menuToggle?.setAttribute('aria-expanded', 'true');
+    document.body.classList.add('overflow-hidden');
+}
+function closeSidebar() {
+    sidebar?.classList.add('-translate-x-full');
+    overlay?.classList.add('hidden');
+    menuToggle?.setAttribute('aria-expanded', 'false');
+    document.body.classList.remove('overflow-hidden');
+}
+function isSidebarOpen() {
+    return sidebar ? !sidebar.classList.contains('-translate-x-full') : false;
+}
+
+menuToggle?.addEventListener('click', (event) => {
+    event.preventDefault();
+    isSidebarOpen() ? closeSidebar() : openSidebar();
 });
-document.querySelector('[data-overlay]')?.addEventListener('click', () => {
-    document.querySelector('[data-sidebar]')?.classList.add('-translate-x-full');
-    document.querySelector('[data-overlay]')?.classList.add('hidden');
+overlay?.addEventListener('click', closeSidebar);
+
+// Setelah memilih menu di layar kecil, tutup laci navigasi agar halaman tujuan terlihat penuh.
+sidebar?.querySelectorAll('a[href]').forEach((link) => {
+    link.addEventListener('click', () => {
+        if (window.matchMedia('(max-width: 1023px)').matches) closeSidebar();
+    });
+});
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && isSidebarOpen()) closeSidebar();
+});
+
+// Saat layar melebar ke ukuran desktop, sidebar menjadi permanen sehingga status laci mobile direset.
+window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
+    if (event.matches) {
+        overlay?.classList.add('hidden');
+        menuToggle?.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('overflow-hidden');
+    }
 });
 
 let deferredInstall;
@@ -27,7 +64,7 @@ document.querySelector('[data-install-pwa]')?.addEventListener('click', async ()
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', async () => {
-        const registration = await navigator.serviceWorker.register('/service-worker.js?v=5');
+        const registration = await navigator.serviceWorker.register('/service-worker.js?v=6');
         registration.update();
     });
 }

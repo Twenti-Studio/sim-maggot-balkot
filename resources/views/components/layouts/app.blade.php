@@ -14,7 +14,7 @@
 </head>
 <body class="min-h-screen bg-stone-50">
     <div data-overlay class="fixed inset-0 z-30 hidden bg-slate-950/40 lg:hidden"></div>
-    <aside data-sidebar class="fixed inset-y-0 left-0 z-40 flex w-72 -translate-x-full flex-col border-r border-stone-200 bg-white transition-transform lg:translate-x-0">
+    <aside id="sidebar-navigasi" data-sidebar class="fixed inset-y-0 left-0 z-40 flex w-72 -translate-x-full flex-col border-r border-stone-200 bg-white transition-transform lg:translate-x-0">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-3 border-b border-stone-100 px-5 py-5">
             <img src="/icons/app-icon.png" alt="Logo SIM Maggot Balkot" class="size-11 rounded-xl object-contain">
             <div>
@@ -117,7 +117,7 @@
         <header class="sticky top-0 z-20 border-b border-stone-200 bg-white/95 backdrop-blur">
             <div class="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
                 <div class="flex min-w-0 items-center gap-3">
-                    <button data-menu-toggle type="button" class="grid size-11 place-items-center rounded-xl text-slate-600 hover:bg-stone-100 lg:hidden" aria-label="Buka navigasi">
+                    <button data-menu-toggle type="button" class="grid size-11 place-items-center rounded-xl text-slate-600 hover:bg-stone-100 lg:hidden" aria-label="Buka navigasi" aria-controls="sidebar-navigasi" aria-expanded="false">
                         <x-heroicon-o-bars-3 class="size-6" />
                     </button>
                     <div class="min-w-0">
